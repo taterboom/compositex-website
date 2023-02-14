@@ -1,0 +1,17 @@
+# Introduction
+
+CompositeX 是一款高效而强大的浏览器插件，可以帮助您更方便地管理功能脚本。通过编写单独的功能节点并将它们组合成一个工作流。CompositeX 参考了 express 和 redux 中的中间件机制，使得用户脚本变得更加灵活高效。
+
+CompositeX 基本单位是 Node，他就像一个纯函数一样，处理输入的信息并输出，除此以外还包含一些配置。
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/51a205c4-4cac-4546-a0ac-de9082f6dc2a/Untitled.png)
+
+组合一些 Node，形成一个 Pipeline，Pipeline 的输入是第一个 Node 的输入，Pipeline 的输出是最后一个 Node 的输出，其他 Node 的输入是上一个 Node 的输出。
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/f1fc3f82-c510-4859-8435-44ce80316691/Untitled.png)
+
+与直接编写实现某个功能的脚本相比，CompositeX 有一些优点：
+
+- 通过 CompositeX 提供的 UI 可以看到执行的进度和结果
+- 通过不同的参数配置扩展这个工作流
+- 随意添加或删除 Pipeline 的 Node 实现更多功能
