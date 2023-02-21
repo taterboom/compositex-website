@@ -1,3 +1,9 @@
+import { Demo } from "./Demo"
+
 export default function Home() {
-  return <main>Landing Page</main>
+  return (
+    <main>
+      <Demo></Demo>
+    </main>
+  )
 }

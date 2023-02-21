@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@next/font': 13.1.6
+  '@types/matter-js': ^0.18.2
   '@types/node': 18.13.0
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.10
@@ -10,9 +11,11 @@ specifiers:
   daisyui: ^2.50.0
   eslint: 8.34.0
   eslint-config-next: 13.1.6
+  matter-js: ^0.19.0
   next: 13.1.6
   nextra: ^2.2.14
   nextra-theme-docs: ^2.2.14
+  poly-decomp: ^0.3.0
   postcss: ^8.4.21
   react: 18.2.0
   react-dom: 18.2.0
@@ -29,14 +32,19 @@ dependencies:
   daisyui: 2.50.0_gbtt6ss3tbiz4yjtvdr6fbrj44
   eslint: 8.34.0
   eslint-config-next: 13.1.6_7kw3g6rralp5ps6mg3uyzz6azm
+  matter-js: 0.19.0
   next: 13.1.6_biqbaboplfbrettd7655fr4n2y
   nextra: 2.2.14_3vryta7zmbcsw4rrqf4axjqggm
   nextra-theme-docs: 2.2.14_u6qwm625rg3t7ll2t4ybomvrai
+  poly-decomp: 0.3.0
   postcss: 8.4.21
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   tailwindcss: 3.2.6
   typescript: 4.9.5
+
+devDependencies:
+  '@types/matter-js': 0.18.2
 
 packages:
 
@@ -463,6 +471,10 @@ packages:
   /@types/katex/0.11.1:
     resolution: {integrity: sha512-DUlIj2nk0YnJdlWgsFuVKcX27MLW0KbKmGVoUHmFr+74FYYNUDAaj9ZqTADvsbE8rfxuVmSFc7KczYn5Y09ozg==}
     dev: false
+
+  /@types/matter-js/0.18.2:
+    resolution: {integrity: sha512-W9UC9DOPNBRTUocqqPZmzX3cbHmlZBI9jLn6SuxZz0n5QrPk382Ig3hbBWHqYU8TRUmTCJJhuanXeyMTavF7Mg==}
+    dev: true
 
   /@types/mdast/3.0.10:
     resolution: {integrity: sha512-W864tg/Osz1+9f4lrGTZpCSO5/z4608eUp19tbozkq2HJK6i3z1kT0H9tlADXuYIb1YYOBByU4Jsqkk75q48qA==}
@@ -2418,6 +2430,10 @@ packages:
       remove-accents: 0.4.2
     dev: false
 
+  /matter-js/0.19.0:
+    resolution: {integrity: sha512-v2huwvQGOHTGOkMqtHd2hercCG3f6QAObTisPPHg8TZqq2lz7eIY/5i/5YUV8Ibf3mEioFEmwibcPUF2/fnKKQ==}
+    dev: false
+
   /mdast-util-definitions/5.1.2:
     resolution: {integrity: sha512-8SVPMuHqlPME/z3gqVwWY4zVXn8lqKv/pAhC57FuJ40ImXyBpmO5ukh98zB2v7Blql2FiHjHv9LVztSIqjY+MA==}
     dependencies:
@@ -3380,6 +3396,10 @@ packages:
   /pify/2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /poly-decomp/0.3.0:
+    resolution: {integrity: sha512-hWeBxGzPYiybmI4548Fca7Up/0k1qS5+79cVHI9+H33dKya5YNb9hxl0ZnDaDgvrZSuYFBhkCK/HOnqN7gefkQ==}
     dev: false
 
   /postcss-import/14.1.0_postcss@8.4.21:
