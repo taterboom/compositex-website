@@ -16,11 +16,32 @@ import {
   IBodyDefinition,
 } from "matter-js"
 import Image from "next/image"
-// @ts-ignore
-import decomp from "poly-decomp"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import clsx from "classnames"
+import { useMotionValueEvent, useScroll, clamp } from "framer-motion"
 
-Common.setDecomp(decomp)
+function FlowLine(
+  props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
+    active?: boolean
+  }
+) {
+  return (
+    <div {...props}>
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M 100 50 H 0"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="4, 10"
+          strokeDashoffset="0"
+          className={clsx(props.active && "animate-flow")}
+        ></path>
+      </svg>
+    </div>
+  )
+}
 
 // const partA = 20
 // const partB = 86
@@ -41,6 +62,26 @@ Common.setDecomp(decomp)
 //   ),
 //   [4, 4, 0, 0, 4, 4, 4, 4, 0, 0, 4, 4]
 // )
+
+// 使用 texture 来设置文字
+
+const NODES = [
+  {
+    value: 2,
+  },
+  {
+    value: 3,
+  },
+  {
+    value: 4,
+  },
+  {
+    value: -1,
+  },
+  {
+    value: -2,
+  },
+]
 
 const SPRITE_WIDTH = 317
 const SPRITE_HEIGHT = 139
@@ -83,6 +124,27 @@ export function Demo() {
   const [currentCollide, setCurrentCollide] = useState<string>()
   const [currentDragged, setCurrentDragged] = useState<string>()
   const [activeNodes, setActiveNodes] = useState<any[]>([])
+  const { scrollY, scrollYProgress } = useScroll()
+  const [span, setSpan] = useState<null | [number, number]>(null)
+  const matterNodes = useRef()
+  const matterPlaceholders = useRef()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    console.log("Page scroll: ", latest, scrollYProgress)
+    if (!span) return
+    const progress = clamp(0, 1, (latest - span[0]) / span[1])
+    // TODO p1 => p2
+  })
+
+  useEffect(() => {
+    if (!root.current) return
+    const rootRect = root.current.getBoundingClientRect()
+    const scrollTop = document.documentElement.scrollTop
+    const rootTop = scrollTop + rootRect.top
+    const rootHeight = rootRect.height
+    setSpan([rootTop, rootTop + rootHeight])
+  }, [])
+
   useEffect(() => {
     if (!root.current) return
     const engine = Engine.create()
@@ -101,7 +163,7 @@ export function Demo() {
       restitution: 1,
       render: { fillStyle: "#11f", strokeStyle: "#fff" },
     })
-    const nodes = [...new Array(5)].map((_, index) => {
+    const nodes = NODES.map((item, index) => {
       const x = Math.random() * (CANVAS_WIDTH - NODE_WIDTH) + NODE_WIDTH / 2
       const y = Math.random() * 200 - 200
       const angle = Math.random() * Math.PI
@@ -110,12 +172,13 @@ export function Demo() {
         { x, y },
         {
           angle,
-          label: index + "",
+          label: item.value + "",
         }
       )
     })
     const placeholders = [...new Array(3)].map((_, index) => {
-      const x = CANVAS_WIDTH / 3 / 2 + (CANVAS_WIDTH / 3) * index
+      const x =
+        ((CANVAS_WIDTH - 3 * NODE_WIDTH) / 4) * (index + 1) + NODE_WIDTH / 2 + NODE_WIDTH * index
       const y = 400
       return createNode("placeholder", { x, y }, { label: index + "" })
     })
@@ -158,13 +221,19 @@ export function Demo() {
       const body = e.body as Body
       setDragged(null)
       body.render.strokeStyle = "#fff"
-      if (collide?.label) {
+      if (collide?.label && body?.label) {
         body.isStatic = true
         console.log(collide.label)
         Body.setPosition(body, collide.position)
         Body.setAngle(body, collide.angle)
-        const label = collide!.label
-        setActiveNodes((v) => v.concat([label]))
+        const collideLabel = collide!.label
+        const draggedLabel = body.label
+        setActiveNodes((_v) => {
+          const v = [..._v]
+          const index = parseInt(collideLabel)
+          v[index] = draggedLabel
+          return v
+        })
         collide = null
       }
     })
@@ -265,27 +334,46 @@ export function Demo() {
   return (
     <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
       <div
-        className="absolute flex justify-around w-full pointer-events-none"
+        className={clsx("absolute flex justify-around items-center w-full pointer-events-none")}
         style={{ top: 400 - NODE_HEIGHT / 2 }}
       >
-        {[...new Array(3)].map((_, index) => (
-          <Image
-            key={index}
-            src={SPRITE_PLACEHOLDER}
-            width={NODE_WIDTH}
-            height={NODE_HEIGHT}
-            alt=""
-            style={{
-              opacity: activeNodes.includes(index + "")
-                ? 0
-                : currentCollide === index + ""
-                ? 1
-                : !!currentDragged
-                ? 0.7
-                : 0.3,
-            }}
-          />
-        ))}
+        <FlowLine
+          active
+          className={clsx(
+            "flex-1 relative",
+            "after:absolute after:left-0 after:top-1/2 after:-translate-x-3/4 after:-translate-y-1/2 after:border-4 after:border-primary after:rounded-full"
+          )}
+        />
+        {[...new Array(3)].map((_, index, arr) => {
+          return (
+            <>
+              <Image
+                key={index}
+                src={SPRITE_PLACEHOLDER}
+                width={NODE_WIDTH}
+                height={NODE_HEIGHT}
+                alt=""
+                style={{
+                  opacity: activeNodes[index] !== undefined ? 0 : !!currentDragged ? 0.7 : 0.3,
+                }}
+              />
+              <FlowLine
+                active={activeNodes[index] !== undefined}
+                className={clsx(
+                  "flex-1 relative",
+                  index === arr.length - 1 &&
+                    "after:absolute after:right-0 after:top-1/2 after:translate-x-3/4 after:-translate-y-1/2 after:border-x-8 after:border-y-4 after:border-transparent after:!border-l-primary"
+                )}
+                style={{
+                  opacity: activeNodes[index] !== undefined ? 1 : !!currentDragged ? 0.7 : 0.3,
+                }}
+              ></FlowLine>
+            </>
+          )
+        })}
+      </div>
+      <div className="absolute top-0 left-0">
+        {activeNodes.join(" ")} = {activeNodes.reduce((a, b) => parseInt(a) + parseInt(b), 0)}
       </div>
     </div>
   )

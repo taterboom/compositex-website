@@ -6,7 +6,21 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        flow: {
+          "0%, 100%": {
+            "stroke-dashoffset": 0,
+          },
+          "50%": {
+            "stroke-dashoffset": 5000,
+          },
+        },
+      },
+      animation: {
+        flow: "flow 300s infinite linear ",
+      },
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
