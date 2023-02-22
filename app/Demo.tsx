@@ -119,31 +119,21 @@ function createNode(
 const CANVAS_WIDTH = 600
 const CANVAS_HEIGHT = 600
 
-export function Demo() {
+export function Demo(props: { subscribeProgressChange: any }) {
+  const { subscribeProgressChange } = props
   const root = useRef<HTMLDivElement | null>(null)
   const [currentCollide, setCurrentCollide] = useState<string>()
   const [currentDragged, setCurrentDragged] = useState<string>()
   const [activeNodes, setActiveNodes] = useState<any[]>([])
-  const { scrollY, scrollYProgress } = useScroll()
-  const [span, setSpan] = useState<null | [number, number]>(null)
   const matterNodes = useRef()
   const matterPlaceholders = useRef()
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    console.log("Page scroll: ", latest, scrollYProgress)
-    if (!span) return
-    const progress = clamp(0, 1, (latest - span[0]) / span[1])
-    // TODO p1 => p2
-  })
-
   useEffect(() => {
-    if (!root.current) return
-    const rootRect = root.current.getBoundingClientRect()
-    const scrollTop = document.documentElement.scrollTop
-    const rootTop = scrollTop + rootRect.top
-    const rootHeight = rootRect.height
-    setSpan([rootTop, rootTop + rootHeight])
-  }, [])
+    return subscribeProgressChange((progress: any) => {
+      console.log(progress)
+      // TODO motion
+    })
+  }, [subscribeProgressChange])
 
   useEffect(() => {
     if (!root.current) return
