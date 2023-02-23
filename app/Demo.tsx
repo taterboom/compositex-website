@@ -1,24 +1,21 @@
 "use client"
+import clsx from "classnames"
+import { animate, useInView } from "framer-motion"
 import {
+  Bodies,
+  Body,
   Common,
   Composite,
   Engine,
-  Render,
-  Runner,
-  Bodies,
-  Body,
+  Events,
   Mouse,
   MouseConstraint,
+  Render,
+  Runner,
   World,
-  Events,
-  Query,
-  Vertices,
-  IBodyDefinition,
 } from "matter-js"
 import Image from "next/image"
-import { useEffect, useMemo, useRef, useState } from "react"
-import clsx from "classnames"
-import { useMotionValueEvent, useScroll, clamp } from "framer-motion"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 function FlowLine(
   props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
@@ -31,7 +28,7 @@ function FlowLine(
         <path
           d="M 100 50 H 0"
           stroke="currentColor"
-          strokeWidth="1"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="4, 10"
@@ -90,48 +87,108 @@ const NODE_WIDTH = SPRITE_WIDTH * SCALE
 const NODE_HEIGHT = SPRITE_HEIGHT * SCALE
 const SPRITE_NODE = "/images/Vector.png"
 const SPRITE_PLACEHOLDER = "/images/Vector2.png"
-function createNode(
-  type: "node" | "placeholder",
-  position: { x: number; y: number },
-  options?: IBodyDefinition
-) {
-  const body = Bodies.rectangle(position.x, position.y, NODE_WIDTH, NODE_HEIGHT, {
-    ...options,
-    isSensor: type === "placeholder",
-    isStatic: type === "placeholder",
-    render: {
-      ...options?.render,
-      ...(type === "node"
-        ? {
-            sprite: {
-              texture: SPRITE_NODE,
-              xScale: SCALE,
-              yScale: SCALE,
-            },
-          }
-        : {}),
-      ...(type === "placeholder" ? { visible: false } : {}),
-    },
-  })
-  return body
-}
 
 const CANVAS_WIDTH = 600
 const CANVAS_HEIGHT = 600
 
+const PROGRESS_THRESHOLDS = [0.4, 0.55, 0.7]
+
 export function Demo(props: { subscribeProgressChange: any }) {
   const { subscribeProgressChange } = props
   const root = useRef<HTMLDivElement | null>(null)
-  const [currentCollide, setCurrentCollide] = useState<string>()
-  const [currentDragged, setCurrentDragged] = useState<string>()
-  const [activeNodes, setActiveNodes] = useState<any[]>([])
-  const matterNodes = useRef()
-  const matterPlaceholders = useRef()
+  const [currentCollide, setCurrentCollide] = useState<Body | null>(null)
+  const [currentDragged, setCurrentDragged] = useState<Body | null>(null)
+  const [activeNodes, setActiveNodes] = useState<Array<Body | null>>([null, null, null])
+  const futureActiveNodesRef = useRef<Array<Body | null>>([null, null, null])
+  const matterNodes = useRef<Body[]>()
+  const matterPlaceholders = useRef<Body[]>()
+  const playing = useRef(false)
+
+  const isInView = useInView(root, { amount: 0.5 })
+
+  const play = useRef(() => {
+    const currentMatterNodes = matterNodes.current
+    if (!currentMatterNodes) return
+    if (!playing.current) {
+      playing.current = true
+      currentMatterNodes
+        .filter((item) => !futureActiveNodesRef.current.includes(item))
+        .forEach((node) => Body.setStatic(node, false))
+    }
+  })
 
   useEffect(() => {
+    if (isInView) {
+      play.current()
+    }
+  }, [isInView])
+
+  useEffect(() => {
+    activeNodes.forEach((node, index) => {
+      if (node && !futureActiveNodesRef.current[index]) futureActiveNodesRef.current[index] = node
+    })
+  }, [activeNodes])
+
+  useEffect(() => {
+    let anied = [false, false, false]
     return subscribeProgressChange((progress: any) => {
       console.log(progress)
-      // TODO motion
+      const currentMatterNodes = matterNodes.current
+      const currentMatterPlaceholders = matterPlaceholders.current
+      if (!currentMatterNodes || !currentMatterPlaceholders) return
+
+      if (progress > 0) {
+        play.current()
+      }
+
+      const animateNodeToPlaceholder = (node: Body, placeholder: Body) => {
+        const startPosition = Common.clone(node.position, false)
+        const startAngle = node.angle
+        const endPosition = Common.clone(placeholder.position, false)
+        const endAngle = placeholder.angle
+        const update = (progress: number) => {
+          Body.setPosition(node, {
+            x: startPosition.x + (endPosition.x - startPosition.x) * progress,
+            y: startPosition.y + (endPosition.y - startPosition.y) * progress,
+          })
+          Body.setAngle(node, startAngle + (endAngle - startAngle) * progress)
+        }
+        const placeholderIndex = currentMatterPlaceholders.indexOf(placeholder)
+        futureActiveNodesRef.current[placeholderIndex] = node
+        animate(0, 1, {
+          type: "spring",
+          // damping: 30,
+          stiffness: 30,
+          onUpdate: update,
+          onComplete: () => {
+            Body.setStatic(node, true)
+            setActiveNodes((_v) => {
+              const v = [..._v]
+              v[placeholderIndex] = node
+              return v
+            })
+          },
+        })
+      }
+
+      const fillPlaceHolder = () => {
+        const node = Common.choose(
+          currentMatterNodes.filter((item) => !futureActiveNodesRef.current.includes(item))
+        )
+        const placeholder =
+          currentMatterPlaceholders[futureActiveNodesRef.current.findIndex((n) => n === null)]
+        console.log(node, placeholder, futureActiveNodesRef.current)
+        if (!node || !placeholder) return
+        animateNodeToPlaceholder(node, placeholder)
+      }
+
+      const activeNodeCount = futureActiveNodesRef.current.filter(Boolean).length
+      PROGRESS_THRESHOLDS.forEach((progressThreshold, index) => {
+        if (progress > progressThreshold && activeNodeCount <= index && !anied[index]) {
+          anied[index] = true
+          fillPlaceHolder()
+        }
+      })
     })
   }, [subscribeProgressChange])
 
@@ -157,21 +214,34 @@ export function Demo(props: { subscribeProgressChange: any }) {
       const x = Math.random() * (CANVAS_WIDTH - NODE_WIDTH) + NODE_WIDTH / 2
       const y = Math.random() * 200 - 200
       const angle = Math.random() * Math.PI
-      return createNode(
-        "node",
-        { x, y },
-        {
-          angle,
-          label: item.value + "",
-        }
-      )
+      return Bodies.rectangle(x, y, NODE_WIDTH, NODE_HEIGHT, {
+        angle,
+        label: item.value + "",
+        isStatic: true,
+        render: {
+          sprite: {
+            texture: SPRITE_NODE,
+            xScale: SCALE,
+            yScale: SCALE,
+          },
+        },
+      })
     })
+    matterNodes.current = nodes
     const placeholders = [...new Array(3)].map((_, index) => {
       const x =
         ((CANVAS_WIDTH - 3 * NODE_WIDTH) / 4) * (index + 1) + NODE_WIDTH / 2 + NODE_WIDTH * index
       const y = 400
-      return createNode("placeholder", { x, y }, { label: index + "" })
+      return Bodies.rectangle(x, y, NODE_WIDTH, NODE_HEIGHT, {
+        label: index + "",
+        isSensor: true,
+        isStatic: true,
+        render: {
+          visible: false,
+        },
+      })
     })
+    matterPlaceholders.current = placeholders
     Composite.add(engine.world, [ground, ...nodes, ...placeholders])
     Render.run(render)
     const runner = Runner.create()
@@ -187,6 +257,16 @@ export function Demo(props: { subscribeProgressChange: any }) {
         },
       },
     })
+    mouseConstraint.mouse.element.removeEventListener(
+      "mousewheel",
+      // @ts-ignore
+      mouseConstraint.mouse.mousewheel
+    )
+    mouseConstraint.mouse.element.removeEventListener(
+      "DOMMouseScroll",
+      // @ts-ignore
+      mouseConstraint.mouse.mousewheel
+    )
     Composite.add(engine.world, mouseConstraint)
     // keep the mouse in sync with rendering
     render.mouse = mouse
@@ -195,11 +275,11 @@ export function Demo(props: { subscribeProgressChange: any }) {
     let collide: Body | null
     const setDragged = (value: typeof dragged) => {
       dragged = value
-      setCurrentDragged(dragged?.label)
+      setCurrentDragged(dragged)
     }
     const setCollde = (value: typeof collide) => {
       collide = value
-      setCurrentCollide(collide?.label)
+      setCurrentCollide(collide)
     }
     Events.on(mouseConstraint, "startdrag", (e) => {
       console.log("sd", e)
@@ -217,11 +297,10 @@ export function Demo(props: { subscribeProgressChange: any }) {
         Body.setPosition(body, collide.position)
         Body.setAngle(body, collide.angle)
         const collideLabel = collide!.label
-        const draggedLabel = body.label
         setActiveNodes((_v) => {
           const v = [..._v]
           const index = parseInt(collideLabel)
-          v[index] = draggedLabel
+          v[index] = body
           return v
         })
         collide = null
@@ -321,6 +400,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
       render.textures = {}
     }
   }, [])
+
   return (
     <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
       <div
@@ -344,18 +424,18 @@ export function Demo(props: { subscribeProgressChange: any }) {
                 height={NODE_HEIGHT}
                 alt=""
                 style={{
-                  opacity: activeNodes[index] !== undefined ? 0 : !!currentDragged ? 0.7 : 0.3,
+                  opacity: activeNodes[index] !== null ? 0 : !!currentDragged ? 0.7 : 0.3,
                 }}
               />
               <FlowLine
-                active={activeNodes[index] !== undefined}
+                active={activeNodes[index] !== null}
                 className={clsx(
                   "flex-1 relative",
                   index === arr.length - 1 &&
                     "after:absolute after:right-0 after:top-1/2 after:translate-x-3/4 after:-translate-y-1/2 after:border-x-8 after:border-y-4 after:border-transparent after:!border-l-primary"
                 )}
                 style={{
-                  opacity: activeNodes[index] !== undefined ? 1 : !!currentDragged ? 0.7 : 0.3,
+                  opacity: activeNodes[index] !== null ? 1 : !!currentDragged ? 0.7 : 0.3,
                 }}
               ></FlowLine>
             </>
@@ -363,7 +443,10 @@ export function Demo(props: { subscribeProgressChange: any }) {
         })}
       </div>
       <div className="absolute top-0 left-0">
-        {activeNodes.join(" ")} = {activeNodes.reduce((a, b) => parseInt(a) + parseInt(b), 0)}
+        {activeNodes.map((node) => node?.label ?? "").join(" ")} ={" "}
+        {activeNodes
+          .map((node) => node?.label ?? "")
+          .reduce((sum, numStr) => sum + parseInt(numStr), 0)}
       </div>
     </div>
   )

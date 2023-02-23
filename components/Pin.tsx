@@ -28,7 +28,9 @@ export function usePin(params: Params) {
     window.addEventListener("scroll", () => {
       const scrollDistance = document.documentElement.scrollTop
       const progress = (scrollDistance - pinContainerDiff) / distance
-      onChange?.(progress)
+      if (progress >= 0 && progress <= 1) {
+        onChange?.(progress)
+      }
     })
 
     return () => {

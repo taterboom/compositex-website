@@ -8,7 +8,7 @@ import { useCallback, useRef } from "react"
 const emitter = new TinyEmitter()
 export default function Home() {
   const { containerRef, pinRef, wrapperRef } = usePin({
-    distance: 5000,
+    distance: 600,
     onChange: (v) => {
       emitter.emit("change", v)
     },
