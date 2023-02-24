@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import data from "@/assets/compositex-backup-20230212.json"
+import { data } from "@/utils/exploreData"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 type ExploreObject = any

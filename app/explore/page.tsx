@@ -3,6 +3,7 @@ import { MaterialSymbolsDownloadRounded } from "@/components/icons"
 import clsx from "classnames"
 import { BundledPipeline, MetaNode } from "@/type"
 import Installer from "./Installer"
+import { data } from "@/utils/exploreData"
 
 function installMetaNode(metaNode: any) {}
 
@@ -44,9 +45,7 @@ function PipelineItem(props: { value: BundledPipeline }) {
 }
 
 export default async function Explore() {
-  const objects: any[] = await fetch(`${process.env.ENDPOINT}/api/explore/objects`).then((res) =>
-    res.json()
-  )
+  const objects: any[] = data
   return (
     <div>
       {objects.map((item) =>
