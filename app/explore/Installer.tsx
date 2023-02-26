@@ -15,7 +15,7 @@ declare global {
 export default function Installer(props: { value: any }) {
   return (
     <button
-      className={clsx("btn")}
+      className={clsx("btn btn-sm btn-primary mt-auto")}
       onClick={() => {
         // window.__xxx__.install()
         // cs: create options.html
@@ -25,6 +25,7 @@ export default function Installer(props: { value: any }) {
         } else {
           // TODO toast extension uninstall
           console.log("no")
+          alert("Install the extension first")
         }
       }}
     >

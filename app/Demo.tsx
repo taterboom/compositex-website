@@ -91,7 +91,7 @@ const SPRITE_PLACEHOLDER = "/images/Vector2.png"
 const CANVAS_WIDTH = 600
 const CANVAS_HEIGHT = 600
 
-const PROGRESS_THRESHOLDS = [0.4, 0.55, 0.7]
+const PROGRESS_THRESHOLDS = [0, 0.3, 0.6]
 
 export function Demo(props: { subscribeProgressChange: any }) {
   const { subscribeProgressChange } = props

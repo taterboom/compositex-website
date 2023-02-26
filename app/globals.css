@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.compositex-hero {
+    height: 400px;
+    background-image: url(/images/bg.png);
+    background-size: 256px 324px;
+    background-position: left;
+    background-repeat: no-repeat;
+}
+.compositex-hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 400px;
+    padding: 0 5rem;
+    backdrop-filter: blur(32px);
+}
