@@ -1,0 +1,26 @@
+# Node
+
+![Utitled.png](/docs/introduction-1.png)
+
+## Definition
+
+```typescript
+type TypeDefinition = {
+  type: "string" | "number" | "boolean" | "json" | "enum" | "any"
+  enumItems?: { name: string; value: string }[]
+  desc?: string
+}
+type Option = {
+  name: string
+  default?: any
+} & TypeDefinition
+type MetaNodeConfig = {
+  config: {
+    name: string
+    input?: TypeDefinition
+    output?: TypeDefinition
+    options?: Option[]
+  }
+  run(input: any, options: Record<string, any>, context: RunningContext): any
+}
+```

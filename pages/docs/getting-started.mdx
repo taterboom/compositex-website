@@ -1,17 +1,68 @@
 # Getting Started
 
-## Example
+We will create a pipeline to compress image using Tinypng. If you haven't installed CompositeX yet, please go ahead and install it.
+
+```mermaid
+flowchart LR
+	A("Get specified img src") --> B("Tinypng") --> C("Get info")
+```
+
+## Steps
 
 <div className="steps-container">
-### Step1
-111
 
-### Step2
+### Get Image URL
 
-222
+expression
 
-### Step3
+```
+document.querySelector('img').src
+```
 
-333
+### Tinypng compress
+
+create a Node
+
+```jsx
+;(function () {
+  /** @type {CompositeX.MetaNodeConfig} */
+  const nodeConfig = {
+    config: {
+      name: "Tinypng",
+      desc: "Compress via Tinypng",
+      input: { type: "string" },
+      output: { type: "any" },
+      options: [{ name: "apiKey", type: "string" }],
+    },
+    run(input, options, context) {
+      return context
+        .fetch("https://api.tinify.com/shrink", {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${window.btoa(`api:${options.apiKey}`)}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            source: {
+              url: input,
+            },
+          }),
+        })
+        .then((res) => res.data)
+    },
+  }
+  return nodeConfig
+})()
+```
+
+### Get info via LodashGet
+
+```javascript
+output.url
+```
+
+### Create a Pipeline for nodes combining
+
+Create
 
 </div>
