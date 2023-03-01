@@ -1,1 +1,1 @@
-export { default as data } from "@/assets/compositex-backup-20230212.json"
+export { default as data } from "@/assets/presets.json"

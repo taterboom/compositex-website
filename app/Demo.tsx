@@ -402,51 +402,57 @@ export function Demo(props: { subscribeProgressChange: any }) {
   }, [])
 
   return (
-    <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
-      <div
-        className={clsx("absolute flex justify-around items-center w-full pointer-events-none")}
-        style={{ top: 400 - NODE_HEIGHT / 2 }}
-      >
-        <FlowLine
-          active
-          className={clsx(
-            "flex-1 relative",
-            "after:absolute after:left-0 after:top-1/2 after:-translate-x-3/4 after:-translate-y-1/2 after:border-4 after:border-primary after:rounded-full"
-          )}
-        />
-        {[...new Array(3)].map((_, index, arr) => {
-          return (
-            <>
-              <Image
-                key={index}
-                src={SPRITE_PLACEHOLDER}
-                width={NODE_WIDTH}
-                height={NODE_HEIGHT}
-                alt=""
-                style={{
-                  opacity: activeNodes[index] !== null ? 0 : !!currentDragged ? 0.7 : 0.3,
-                }}
-              />
-              <FlowLine
-                active={activeNodes[index] !== null}
-                className={clsx(
-                  "flex-1 relative",
-                  index === arr.length - 1 &&
-                    "after:absolute after:right-0 after:top-1/2 after:translate-x-3/4 after:-translate-y-1/2 after:border-x-8 after:border-y-4 after:border-transparent after:!border-l-primary"
-                )}
-                style={{
-                  opacity: activeNodes[index] !== null ? 1 : !!currentDragged ? 0.7 : 0.3,
-                }}
-              ></FlowLine>
-            </>
-          )
-        })}
+    <div className="flex justify-center gap-4">
+      <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
+        <div
+          className={clsx("absolute flex justify-around items-center w-full pointer-events-none")}
+          style={{ top: 400 - NODE_HEIGHT / 2 }}
+        >
+          <FlowLine
+            active
+            className={clsx(
+              "flex-1 relative",
+              "after:absolute after:left-0 after:top-1/2 after:-translate-x-3/4 after:-translate-y-1/2 after:border-4 after:border-primary after:rounded-full"
+            )}
+          />
+          {[...new Array(3)].map((_, index, arr) => {
+            return (
+              <>
+                <Image
+                  key={index}
+                  src={SPRITE_PLACEHOLDER}
+                  width={NODE_WIDTH}
+                  height={NODE_HEIGHT}
+                  alt=""
+                  style={{
+                    opacity: activeNodes[index] !== null ? 0 : !!currentDragged ? 0.7 : 0.3,
+                  }}
+                />
+                <FlowLine
+                  active={activeNodes[index] !== null}
+                  className={clsx(
+                    "flex-1 relative",
+                    index === arr.length - 1 &&
+                      "after:absolute after:right-0 after:top-1/2 after:translate-x-3/4 after:-translate-y-1/2 after:border-x-8 after:border-y-4 after:border-transparent after:!border-l-primary"
+                  )}
+                  style={{
+                    opacity: activeNodes[index] !== null ? 1 : !!currentDragged ? 0.7 : 0.3,
+                  }}
+                ></FlowLine>
+              </>
+            )
+          })}
+        </div>
+        <div className="absolute top-0 left-0">
+          {activeNodes.map((node) => node?.label ?? "").join(" ")} ={" "}
+          {activeNodes
+            .map((node) => node?.label ?? "")
+            .reduce((sum, numStr) => sum + parseInt(numStr), 0)}
+        </div>
       </div>
-      <div className="absolute top-0 left-0">
-        {activeNodes.map((node) => node?.label ?? "").join(" ")} ={" "}
-        {activeNodes
-          .map((node) => node?.label ?? "")
-          .reduce((sum, numStr) => sum + parseInt(numStr), 0)}
+      <div>
+        <p>Combine Nodes into a Pipeline.</p>
+        <div>[] + [] + [] = []</div>
       </div>
     </div>
   )

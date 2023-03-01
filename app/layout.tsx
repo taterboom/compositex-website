@@ -9,9 +9,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body>
+      <body className="container mx-auto">
         <header>
-          <nav className="navbar">
+          <nav className="navbar py-2 px-4">
             <a className="navbar-start" href="/">
               <Image src="/images/compositex-web-logo.png" alt="logo" width={130} height={16} />
             </a>
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </li>
             </ul>
             <div className="navbar-end">
-              <button className="btn btn-primary">Free Install</button>
+              <button className="btn btn-primary btn-sm">Free Install</button>
             </div>
           </nav>
         </header>

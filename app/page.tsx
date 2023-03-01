@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Demo } from "./Demo"
 import { TinyEmitter } from "tiny-emitter"
 import { useCallback, useRef } from "react"
+import Examples from "./Examples"
 
 const emitter = new TinyEmitter()
 export default function Home() {
@@ -21,7 +22,7 @@ export default function Home() {
   }, [])
   return (
     <div ref={containerRef}>
-      <main ref={wrapperRef}>
+      <main ref={wrapperRef} className="mb-6">
         <div className="compositex-hero">
           <div className="compositex-hero-content">
             <h3 className="text-4xl leading-snug font-semibold">
@@ -37,11 +38,9 @@ export default function Home() {
         <div ref={pinRef}>
           <Demo subscribeProgressChange={subscribe}></Demo>
         </div>
-        {/* TODO Tinypng */}
-        {/* TODO base64 decode */}
-        {/* TODO Pinyin convert */}
-        <div className="h-[600px]">Explore more</div>
-        <footer className="footer items-center p-4 bg-neutral text-neutral-content justify-center gap-16">
+        <Examples />
+        <div className="divider"></div>
+        <footer className="footer items-center p-4 justify-center gap-16 rounded-xl mb-4">
           <div className="items-center grid-flow-col">
             <Image src="/images/compositex-web-logo.png" alt="logo" width={130} height={16} />
           </div>
