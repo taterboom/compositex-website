@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head />
       <body className="container mx-auto">
         <header>
-          <nav className="navbar py-2 px-4">
+          <nav className="navbar py-4 px-4">
             <a className="navbar-start" href="/">
               <Image src="/images/compositex-web-logo.png" alt="logo" width={130} height={16} />
             </a>

@@ -2,10 +2,11 @@ import { useEffect, useRef } from "react"
 
 export type Params = {
   distance: number
+  offset?: number
   onChange?: (progress: number) => void
 }
 export function usePin(params: Params) {
-  const { distance, onChange } = params
+  const { distance, offset = 0, onChange } = params
   const containerRef = useRef<any>(null)
   const wrapperRef = useRef<any>(null)
   const pinRef = useRef<any>(null)
@@ -21,13 +22,14 @@ export function usePin(params: Params) {
     const totalHeight = containerRect.height + distance
     const headHeight = pinRect.top - wrapperRect.top
     const pinContainerDiff = pinRect.top - containerRect.top
+    const containerToTop = document.documentElement.scrollTop + containerRect.top
     container.style.height = `${totalHeight}px`
     wrapper.style.position = "sticky"
-    wrapper.style.top = `${-headHeight}px`
+    wrapper.style.top = `${-headHeight + offset}px`
 
     window.addEventListener("scroll", () => {
       const scrollDistance = document.documentElement.scrollTop
-      const progress = (scrollDistance - pinContainerDiff) / distance
+      const progress = (scrollDistance - (pinContainerDiff - offset) - containerToTop) / distance
       if (progress >= 0 && progress <= 1) {
         onChange?.(progress)
       }

@@ -9,10 +9,10 @@ module.exports = {
     extend: {
       keyframes: {
         flow: {
-          "0%, 100%": {
+          "0%": {
             "stroke-dashoffset": 0,
           },
-          "50%": {
+          "100%": {
             "stroke-dashoffset": 5000,
           },
         },

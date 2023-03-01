@@ -88,8 +88,10 @@ const NODE_HEIGHT = SPRITE_HEIGHT * SCALE
 const SPRITE_NODE = "/images/Vector.png"
 const SPRITE_PLACEHOLDER = "/images/Vector2.png"
 
-const CANVAS_WIDTH = 600
-const CANVAS_HEIGHT = 600
+const CANVAS_WIDTH = 800
+const CANVAS_HEIGHT = 660
+
+const PLACEHOLDER_TOP = 100
 
 const PROGRESS_THRESHOLDS = [0, 0.3, 0.6]
 
@@ -205,11 +207,33 @@ export function Demo(props: { subscribeProgressChange: any }) {
         height: CANVAS_HEIGHT,
       },
     })
-    const ground = Bodies.rectangle(300, 300, 600, 40, {
+    const ground = Bodies.rectangle(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 40, {
       isStatic: true,
       restitution: 1,
       render: { fillStyle: "#11f", strokeStyle: "#fff" },
     })
+    const leftWall = Bodies.rectangle(
+      20,
+      CANVAS_HEIGHT / 2 + PLACEHOLDER_TOP + NODE_HEIGHT,
+      40,
+      CANVAS_HEIGHT,
+      {
+        isStatic: true,
+        restitution: 1,
+        render: { fillStyle: "#11f", strokeStyle: "#fff" },
+      }
+    )
+    const rightWall = Bodies.rectangle(
+      CANVAS_WIDTH - 20,
+      CANVAS_HEIGHT / 2 + PLACEHOLDER_TOP + NODE_HEIGHT,
+      40,
+      CANVAS_HEIGHT,
+      {
+        isStatic: true,
+        restitution: 1,
+        render: { fillStyle: "#11f", strokeStyle: "#fff" },
+      }
+    )
     const nodes = NODES.map((item, index) => {
       const x = Math.random() * (CANVAS_WIDTH - NODE_WIDTH) + NODE_WIDTH / 2
       const y = Math.random() * 200 - 200
@@ -231,7 +255,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
     const placeholders = [...new Array(3)].map((_, index) => {
       const x =
         ((CANVAS_WIDTH - 3 * NODE_WIDTH) / 4) * (index + 1) + NODE_WIDTH / 2 + NODE_WIDTH * index
-      const y = 400
+      const y = PLACEHOLDER_TOP
       return Bodies.rectangle(x, y, NODE_WIDTH, NODE_HEIGHT, {
         label: index + "",
         isSensor: true,
@@ -242,7 +266,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
       })
     })
     matterPlaceholders.current = placeholders
-    Composite.add(engine.world, [ground, ...nodes, ...placeholders])
+    Composite.add(engine.world, [ground, leftWall, rightWall, ...nodes, ...placeholders])
     Render.run(render)
     const runner = Runner.create()
     Runner.run(runner, engine)
@@ -253,7 +277,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
       constraint: {
         stiffness: 0.2,
         render: {
-          visible: true,
+          visible: false,
         },
       },
     })
@@ -406,7 +430,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
       <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
         <div
           className={clsx("absolute flex justify-around items-center w-full pointer-events-none")}
-          style={{ top: 400 - NODE_HEIGHT / 2 }}
+          style={{ top: PLACEHOLDER_TOP - NODE_HEIGHT / 2 }}
         >
           <FlowLine
             active
@@ -449,10 +473,6 @@ export function Demo(props: { subscribeProgressChange: any }) {
             .map((node) => node?.label ?? "")
             .reduce((sum, numStr) => sum + parseInt(numStr), 0)}
         </div>
-      </div>
-      <div>
-        <p>Combine Nodes into a Pipeline.</p>
-        <div>[] + [] + [] = []</div>
       </div>
     </div>
   )

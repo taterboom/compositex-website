@@ -9,7 +9,8 @@ import Examples from "./Examples"
 const emitter = new TinyEmitter()
 export default function Home() {
   const { containerRef, pinRef, wrapperRef } = usePin({
-    distance: 500,
+    distance: 600,
+    offset: 100,
     onChange: (v) => {
       emitter.emit("change", v)
     },
@@ -22,14 +23,14 @@ export default function Home() {
   }, [])
   return (
     <div ref={containerRef}>
-      <main ref={wrapperRef} className="mb-6">
+      <main ref={wrapperRef} className="mb-8">
         <div className="compositex-hero">
           <div className="compositex-hero-content">
             <h3 className="text-4xl leading-snug font-semibold">
               Powerful browser extension for easy script management with pipelines composed by
               middleware-like nodes.
             </h3>
-            <div className="flex mt-8 gap-4">
+            <div className="flex mt-16 gap-8">
               <button className="btn btn-primary">Getting Started</button>
               <button className="btn btn-primary">Free Install</button>
             </div>
