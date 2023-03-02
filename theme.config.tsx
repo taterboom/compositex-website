@@ -7,7 +7,7 @@ const config: DocsThemeConfig = {
   project: {
     link: "https://github.com/taterboom/compositex-website",
   },
-  docsRepositoryBase: "https://github.com/taterboom/compositex-website/tree/main/pages/docs",
+  docsRepositoryBase: "https://github.com/taterboom/compositex-website/tree/main",
   footer: {
     component: null,
   },
