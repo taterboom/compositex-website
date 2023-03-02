@@ -11,17 +11,23 @@ flowchart LR
 
 <div className="steps-container">
 
+### Create a Pipeline
+
+![](/docs/gs-0-1.jpeg)
+
 ### Get Image URL
 
-expression
+Add `MainWorld` Node, and type expression `document.querySelector('img').src`.
 
-```
-document.querySelector('img').src
-```
+![](/docs/gs-1-1.jpqg)
 
 ### Tinypng compress
 
-create a Node
+Create a Node in Node panel, or create a disposable node.
+
+![](/docs/gs-2-1.jpeg)
+
+Copy the script.
 
 ```jsx
 ;(function () {
@@ -32,37 +38,51 @@ create a Node
       desc: "Compress via Tinypng",
       input: { type: "string" },
       output: { type: "any" },
-      options: [{ name: "apiKey", type: "string" }],
+      options: [
+        {
+          name: "apiKey",
+          desc: "get your api key in https://tinypng.com/developers",
+          type: "string",
+        },
+      ],
     },
     run(input, options, context) {
-      return context
-        .fetch("https://api.tinify.com/shrink", {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${window.btoa(`api:${options.apiKey}`)}`,
-            "Content-Type": "application/json",
+      return fetch("https://api.tinify.com/shrink", {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${window.btoa(`api:${options.apiKey}`)}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source: {
+            url: input,
           },
-          body: JSON.stringify({
-            source: {
-              url: input,
-            },
-          }),
-        })
-        .then((res) => res.data)
+        }),
+      }).then((res) => res.json())
     },
   }
   return nodeConfig
 })()
 ```
 
+![](/docs/gs-2-2.jpeg)
+
+Get your free api key in https://tinypng.com/developers.
+
 ### Get info via LodashGet
+
+Add a LodashGet Node to get the url string from the result of Tinypng Node.
 
 ```javascript
 output.url
 ```
 
-### Create a Pipeline for nodes combining
+![](/docs/gs-3-1.jpeg)
 
-Create
+### Run
+
+Click CompositeX extension icon to open the popup, then click ▶️ button.
+
+<img src="/docs/gs-4-1.jpeg" width="400" style={{ margin: "1rem auto" }} />
 
 </div>

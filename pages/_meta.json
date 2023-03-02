@@ -5,6 +5,12 @@
   },
   "blog": {
     "title": "Blog",
-    "type": "page"
+    "type": "page",
+    "display": "hidden"
+  },
+  "explore": {
+    "title": "Explore",
+    "type": "page",
+    "href": "/explore"
   }
 }

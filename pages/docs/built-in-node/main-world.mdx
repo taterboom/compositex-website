@@ -1,5 +1,65 @@
 # Main World
 
-`Main World` is the inspected Window, the page that the user is currently viewing
+`Main World` is the page that the user is currently viewing
 
-// TODO 简笔画（google, popup）
+![MainWorldExplanation](/docs/main-world-explanation.png)
+
+## Usage
+
+### MainWorld Node
+
+The input is an expression, such as `document.title`, the output is the `ReturnValue` of the expression.
+
+```javascript
+;(function () {
+  /** @type {CompositeX.MetaNodeConfig} */
+  const nodeConfig = {
+    config: {
+      name: "MainWorld",
+      desc: "Get main world info",
+      input: { type: "string" },
+      output: { type: "any" },
+      options: [
+        { name: "expression", desc: 'expression in main world' type: "string" },
+        {
+          name: "type",
+          desc: "choose eval if website support it or choose exec which has limits",
+          type: "enum",
+          enumItems: [
+            { name: "eval", value: "eval" },
+            { name: "exec", value: "exec" },
+          ],
+          default: "eval",
+        },
+      ],
+    },
+    run(input, options, context) {
+      return context.mainWorld(input || options.expression, { type: options.type })
+    },
+  }
+  return nodeConfig
+})()
+```
+
+### Eval vs Exec
+
+Expressions can be executed in two ways, `eval` and `exec`
+
+- `eval` type is the same as the `eval` api of `window`, it can do anything like the api does, but it will not work if the [CSP（Content Security Policy）](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)of the Main World does not support `eval`.
+- `exec` type only support some simple expression, such as `document.querySelect('h1')`, some complicated expression can not work, such as `window.fetch("xxx").then(res => res.json())`. It is not subject to the [CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP).
+
+### API in context
+
+```javascript
+context.mainWorld(expression: string, options?: { type: "eval" | "exec" })
+```
+
+For example
+
+```javascript
+// ...
+    run(input, options, context) {
+        return context.mainWorld('document.title')
+    }
+// ...
+```

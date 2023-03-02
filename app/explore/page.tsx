@@ -23,7 +23,7 @@ export default function Explore() {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <input
           type="text"
           placeholder="Search"
@@ -58,7 +58,7 @@ export default function Explore() {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
         {searchedObjects.map((item) =>
           isMetaNode(item) ? (
             <MetaNodeItem key={item.id} value={item} />
