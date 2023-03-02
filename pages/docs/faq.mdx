@@ -7,4 +7,4 @@ All the extension pages are located under the same path (such as chrome-extensio
 
 ## User Script Eval
 
-CompositeX use `eval` to execute user scripts. Due to the restriction of CSP (Content Security Policy), `eval`` cannot be executed directly in the extension pages, but the extension provides a sandbox function, and the pages configured in the manifest can set CSP in the sandbox. The sandbox.html is embedded in Popup.html through an iframe, and the two communicate through Message to exchange Pipeline information.
+CompositeX use `eval` to execute user scripts. Due to the restriction of CSP (Content Security Policy), `eval` cannot be executed directly in the extension pages, but the extension provides a sandbox function, and the pages configured in the manifest can set CSP in the sandbox. The sandbox.html is embedded in Popup.html through an iframe, and the two communicate through Message to exchange Pipeline information.
