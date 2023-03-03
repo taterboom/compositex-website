@@ -1,3 +1,4 @@
+import { CHROME_EXTENSION_URL } from "@/utils/constants"
 import Image from "next/image"
 import "./globals.css"
 
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </li>
             </ul>
             <div className="navbar-end">
-              <button className="btn btn-primary btn-sm">Free Install</button>
+              <a href={CHROME_EXTENSION_URL}>
+                <button className="btn btn-primary btn-sm">Free Install</button>
+              </a>
             </div>
           </nav>
         </header>
