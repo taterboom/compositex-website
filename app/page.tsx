@@ -5,12 +5,13 @@ import { Demo } from "./Demo"
 import { TinyEmitter } from "tiny-emitter"
 import { useCallback, useRef } from "react"
 import Examples from "./Examples"
+import { CHROME_EXTENSION_URL } from "@/utils/constants"
 
 const emitter = new TinyEmitter()
 export default function Home() {
   const { containerRef, pinRef, wrapperRef } = usePin({
     distance: 600,
-    offset: 100,
+    offset: 80,
     onChange: (v) => {
       emitter.emit("change", v)
     },
@@ -31,8 +32,12 @@ export default function Home() {
               middleware-like nodes.
             </h3>
             <div className="flex mt-16 gap-8">
-              <button className="btn btn-primary">Getting Started</button>
-              <button className="btn btn-primary">Free Install</button>
+              <a href="/docs/getting-started">
+                <button className="btn btn-primary">Getting Started</button>
+              </a>
+              <a href={CHROME_EXTENSION_URL}>
+                <button className="btn btn-primary">Free Install</button>
+              </a>
             </div>
           </div>
         </div>
