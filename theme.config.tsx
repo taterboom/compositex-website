@@ -11,6 +11,11 @@ const config: DocsThemeConfig = {
   footer: {
     component: null,
   },
+  useNextSeoProps() {
+    return {
+      titleTemplate: "%s – CompositeX",
+    }
+  },
 }
 
 export default config
