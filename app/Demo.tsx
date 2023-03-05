@@ -15,7 +15,7 @@ import {
   World,
 } from "matter-js"
 import Image from "next/image"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 function FlowLine(
   props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
@@ -64,19 +64,29 @@ function FlowLine(
 
 const NODES = [
   {
-    value: 2,
+    value: (x: number) => x / 10,
+    label: "÷ 10",
+    texture: "/images/sprite-div-10.png",
   },
   {
-    value: 3,
+    value: (x: number) => x + 1,
+    label: "+ 1",
+    texture: "/images/sprite-add-1.png",
   },
   {
-    value: 4,
+    value: (x: number) => x + 4,
+    label: "+ 4",
+    texture: "/images/sprite-add-4.png",
   },
   {
-    value: -1,
+    value: (x: number) => x - 2,
+    label: "- 2",
+    texture: "/images/sprite-min-2.png",
   },
   {
-    value: -2,
+    value: (x: number) => x * 2,
+    label: "* 2",
+    texture: "/images/sprite-mul-2.png",
   },
 ]
 
@@ -85,7 +95,6 @@ const SPRITE_HEIGHT = 139
 const SCALE = 1 / 2
 const NODE_WIDTH = SPRITE_WIDTH * SCALE
 const NODE_HEIGHT = SPRITE_HEIGHT * SCALE
-const SPRITE_NODE = "/images/Vector.png"
 const SPRITE_PLACEHOLDER = "/images/Vector2.png"
 
 const CANVAS_WIDTH = 800
@@ -106,7 +115,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
   const matterPlaceholders = useRef<Body[]>()
   const playing = useRef(false)
 
-  const isInView = useInView(root, { amount: 0.5 })
+  const isInView = useInView(root, { amount: 0.3 })
 
   const play = useRef(() => {
     const currentMatterNodes = matterNodes.current
@@ -205,46 +214,53 @@ export function Demo(props: { subscribeProgressChange: any }) {
         wireframes: false,
         width: CANVAS_WIDTH,
         height: CANVAS_HEIGHT,
+        background: "transparent",
       },
     })
-    const ground = Bodies.rectangle(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 40, {
+    const ground = Bodies.rectangle(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 6, CANVAS_WIDTH, 12, {
       isStatic: true,
       restitution: 1,
-      render: { fillStyle: "#11f", strokeStyle: "#fff" },
+      render: {
+        fillStyle: undefined,
+      },
     })
     const leftWall = Bodies.rectangle(
-      20,
+      6,
       CANVAS_HEIGHT / 2 + PLACEHOLDER_TOP + NODE_HEIGHT,
-      40,
+      12,
       CANVAS_HEIGHT,
       {
         isStatic: true,
         restitution: 1,
-        render: { fillStyle: "#11f", strokeStyle: "#fff" },
+        render: {
+          fillStyle: undefined,
+        },
       }
     )
     const rightWall = Bodies.rectangle(
-      CANVAS_WIDTH - 20,
+      CANVAS_WIDTH - 6,
       CANVAS_HEIGHT / 2 + PLACEHOLDER_TOP + NODE_HEIGHT,
-      40,
+      12,
       CANVAS_HEIGHT,
       {
         isStatic: true,
         restitution: 1,
-        render: { fillStyle: "#11f", strokeStyle: "#fff" },
+        render: {
+          fillStyle: undefined,
+        },
       }
     )
     const nodes = NODES.map((item, index) => {
-      const x = Math.random() * (CANVAS_WIDTH - NODE_WIDTH) + NODE_WIDTH / 2
-      const y = Math.random() * 200 - 200
+      const x = Math.random() * (CANVAS_WIDTH - NODE_WIDTH - 50) + NODE_WIDTH / 2
+      const y = Math.random() * 200 - 250
       const angle = Math.random() * Math.PI
       return Bodies.rectangle(x, y, NODE_WIDTH, NODE_HEIGHT, {
         angle,
-        label: item.value + "",
+        label: index + "",
         isStatic: true,
         render: {
           sprite: {
-            texture: SPRITE_NODE,
+            texture: item.texture,
             xScale: SCALE,
             yScale: SCALE,
           },
@@ -425,6 +441,12 @@ export function Demo(props: { subscribeProgressChange: any }) {
     }
   }, [])
 
+  const activeNodesInNODES = useMemo(() => {
+    return activeNodes.filter((n) => {
+      return n?.label && NODES[+n.label]
+    })
+  }, [activeNodes])
+
   return (
     <div className="flex justify-center gap-4">
       <div ref={root} className="relative" style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}>
@@ -432,6 +454,7 @@ export function Demo(props: { subscribeProgressChange: any }) {
           className={clsx("absolute flex justify-around items-center w-full pointer-events-none")}
           style={{ top: PLACEHOLDER_TOP - NODE_HEIGHT / 2 }}
         >
+          <div className="relative -left-2 -translate-x-1/2 text-2xl">0</div>
           <FlowLine
             active
             className={clsx(
@@ -466,13 +489,16 @@ export function Demo(props: { subscribeProgressChange: any }) {
               </>
             )
           })}
+          <div className="relative -right-2 translate-x-1/2 text-2xl">
+            {activeNodesInNODES
+              .map((node) => NODES[+node!.label].value)
+              .reduce((res, handle) => handle(res), 0)}
+          </div>
         </div>
-        <div className="absolute top-0 left-0">
-          {activeNodes.map((node) => node?.label ?? "").join(" ")} ={" "}
-          {activeNodes
-            .map((node) => node?.label ?? "")
-            .reduce((sum, numStr) => sum + parseInt(numStr), 0)}
-        </div>
+        <div
+          className="absolute w-full left-0 bottom-0 border-8 rounded border-t-0 border-primary pointer-events-none"
+          style={{ height: CANVAS_HEIGHT / 2 + PLACEHOLDER_TOP + NODE_HEIGHT }}
+        ></div>
       </div>
     </div>
   )
