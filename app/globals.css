@@ -5,7 +5,7 @@
 .compositex-hero {
     background-image: url(/images/bg.png);
     background-size: 256px 324px;
-    background-position: left;
+    background-position: center;
     background-repeat: no-repeat;
 }
 .compositex-hero-content {
