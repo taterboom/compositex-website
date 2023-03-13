@@ -4,6 +4,7 @@ import Color from "@/assets/Color.json"
 import PinyinConvertSelection from "@/assets/Pinyin Convert Selection.json"
 import Pinyin from "@/assets/Pinyin.json"
 import RGB from "@/assets/RGB.json"
+import S3 from "@/assets/S3.json"
 import TinypngCompressImageFile from "@/assets/Tinypng Compress Image File.json"
 import TinypngCompressImageLink from "@/assets/Tinypng Compress Image Link.json"
 import TinypngFile from "@/assets/Tinypng File.json"
@@ -11,6 +12,8 @@ import Tinypng from "@/assets/Tinypng.json"
 import ZeplinImg from "@/assets/ZeplinImg.json"
 
 export const data = [
+  S3,
+  Tinypng,
   Base64DecodeSelection,
   Base64,
   Color,
@@ -20,6 +23,5 @@ export const data = [
   TinypngCompressImageFile,
   TinypngCompressImageLink,
   TinypngFile,
-  Tinypng,
   ZeplinImg,
 ]
