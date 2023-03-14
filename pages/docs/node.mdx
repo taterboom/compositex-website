@@ -40,3 +40,8 @@ type MetaNodeConfig = {
   run(input: any, options: Record<string, any>, context: RunningContext): any
 }
 ```
+
+## Bundled Node
+
+If your node is very complex or depends on an npm package, you will need to use a bundler to bundle it.
+[This GitHub repository](https://github.com/taterboom/compositex-node-template) provides a template for bundling a Node.
