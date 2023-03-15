@@ -41,6 +41,17 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <div className="flex justify-center mb-16">
+          <iframe
+            width="800"
+            height="450"
+            src="https://www.youtube.com/embed/CJKqKhAKlNk"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
         <div ref={pinRef}>
           <Demo subscribeProgressChange={subscribe}></Demo>
         </div>
